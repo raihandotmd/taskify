@@ -1,6 +1,9 @@
 package taskifyHttp
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	userHandler "github.com/raihandotmd/taskify/internal/adapters/inbound/handlers/http/users"
+)
 
 func SetupRoutes(ginClient *gin.Engine) {
 
@@ -9,6 +12,16 @@ func SetupRoutes(ginClient *gin.Engine) {
 			"status": "ok",
 		})
 	})
+
+	auth := ginClient.Group("/auth")
+	{
+		auth.POST("/register", func(c *gin.Context) {
+			if err := userHandler.Register(c); err != nil {
+				c.JSON(400, gin.H{"error": err.Error()})
+				return
+			}
+		})
+	}
 
 	api := ginClient.Group("/api")
 	{
