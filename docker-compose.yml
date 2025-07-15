@@ -9,11 +9,11 @@ services:
     image: postgres:latest
     container_name: taskify_postgres
     environment:
-      POSTGRES_USER: taskify
-      POSTGRES_PASSWORD: taskify
-      POSTGRES_DB: taskify_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -22,13 +22,13 @@ services:
     image: adminer:latest
     container_name: taskify_adminer
     ports:
-      - "8080:8080"
+      - "${ADMINER_PORT}:${ADMINER_PORT}"
     environment:
-      ADMINER_DEFAULT_SERVER: taskify_postgres
-      ADMINER_DEFAULT_DB_DRIVER: pgsql
-      ADMINER_DEFAULT_DB_NAME: taskify_db
-      ADMINER_DEFAULT_USERNAME: taskify
-      ADMINER_DEFAULT_PASSWORD: taskify
+      ADMINER_DEFAULT_SERVER: ${ADMINER_DEFAULT_SERVER}
+      ADMINER_DEFAULT_DB_DRIVER: ${ADMINER_DEFAULT_DB_DRIVER}
+      ADMINER_DEFAULT_DB_NAME: ${POSTGRES_DB}
+      ADMINER_DEFAULT_USERNAME: ${POSTGRES_USER}
+      ADMINER_DEFAULT_PASSWORD: ${POSTGRES_PASSWORD}
     depends_on:
       - postgres
     networks:
@@ -42,7 +42,7 @@ services:
         "-path", 
         "/sql",
         "-database", 
-        "postgres://taskify:taskify@taskify_postgres:5432/taskify_db?sslmode=disable", 
+        "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@taskify_postgres:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable", 
         "up",
       ]
     depends_on:
@@ -60,7 +60,7 @@ services:
         "-path", 
         "/sql",
         "-database", 
-        "postgres://taskify:taskify@taskify_postgres:5432/taskify_db?sslmode=disable", 
+        "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@taskify_postgres:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable", 
         "down",
       ]
     depends_on:
