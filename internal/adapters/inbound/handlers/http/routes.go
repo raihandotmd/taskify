@@ -2,7 +2,9 @@ package taskifyHttp
 
 import (
 	"github.com/gin-gonic/gin"
+	projectHandler "github.com/raihandotmd/taskify/internal/adapters/inbound/handlers/http/projects"
 	userHandler "github.com/raihandotmd/taskify/internal/adapters/inbound/handlers/http/users"
+	middleware "github.com/raihandotmd/taskify/internal/adapters/inbound/middleware/auth"
 )
 
 func SetupRoutes(ginClient *gin.Engine) {
@@ -30,9 +32,16 @@ func SetupRoutes(ginClient *gin.Engine) {
 	}
 
 	api := ginClient.Group("/api")
+	api.Use(middleware.JWTAuth())
 	{
 		v1 := api.Group("/v1")
 		{
+			v1.POST("/projects", func(c *gin.Context) {
+				if err := projectHandler.NewProject(c); err != nil {
+					c.JSON(400, gin.H{"error": err.Error()})
+					return
+				}
+			})
 			// TODO: Add API routes here
 			v1.GET("/tasks", func(c *gin.Context) {
 				c.JSON(200, gin.H{
