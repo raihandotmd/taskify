@@ -1,16 +1,15 @@
 package project
 
-import (
-	obModel "github.com/raihandotmd/taskify/internal/adapters/outbound/models/project"
-)
+import obModel "github.com/raihandotmd/taskify/internal/adapters/outbound/models/project"
 
 type (
-	NewProjectRequest struct {
+	EditProjectRequest struct {
+		ID          string `json:"id"`
 		Name        string `json:"name"`
 		Description string `json:"description"`
 	}
 
-	NewProjectResponse struct {
+	EditProjectResponse struct {
 		ID          string `json:"id"`
 		Name        string `json:"name"`
 		Description string `json:"description"`
@@ -18,8 +17,9 @@ type (
 	}
 )
 
-func (req NewProjectRequest) ToObModel(userId string) obModel.Project {
+func (req EditProjectRequest) ToObModel(userId string) obModel.Project {
 	return obModel.Project{
+		ID:          req.ID,
 		Name:        req.Name,
 		Description: req.Description,
 		UserID:      userId,

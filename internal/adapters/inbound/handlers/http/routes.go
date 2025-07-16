@@ -42,6 +42,19 @@ func SetupRoutes(ginClient *gin.Engine) {
 					return
 				}
 			})
+			v1.GET("/projects", func(c *gin.Context) {
+				if err := projectHandler.GetAllProjectByUserId(c); err != nil {
+					c.JSON(400, gin.H{"error": err.Error()})
+					return
+				}
+			})
+			v1.PUT("/projects/:id", func(c *gin.Context) {
+				if err := projectHandler.EditProject(c); err != nil {
+					c.JSON(400, gin.H{"error": err.Error()})
+					return
+				}
+			})
+
 			// TODO: Add API routes here
 			v1.GET("/tasks", func(c *gin.Context) {
 				c.JSON(200, gin.H{

@@ -4,11 +4,13 @@ type (
 	Repository interface {
 		ICreate
 		IGetAllProjectByUserId
+		IEdit
 	}
 
 	repository struct {
 		create                ICreate
 		getAllProjectByUserId IGetAllProjectByUserId
+		edit                  IEdit
 	}
 )
 

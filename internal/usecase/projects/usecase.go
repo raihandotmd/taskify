@@ -9,10 +9,14 @@ var repoProject = repositoryProject.New()
 type (
 	UseCase interface {
 		INewProject
+		IGetAllProjectByUserId
+		IEditProject
 	}
 
 	ucProject struct {
-		newProject INewProject
+		newProject            INewProject
+		getAllProjectByUserId IGetAllProjectByUserId
+		editProject           IEditProject
 	}
 )
 
