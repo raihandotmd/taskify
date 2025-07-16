@@ -3,10 +3,12 @@ package user
 type (
 	Repository interface {
 		ICreate
+		IGetUserByEmail
 	}
 
 	repository struct {
-		create ICreate
+		create         ICreate
+		getUserByEmail IGetUserByEmail
 	}
 )
 

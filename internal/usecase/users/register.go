@@ -4,7 +4,6 @@ import (
 	"context"
 
 	obModel "github.com/raihandotmd/taskify/internal/adapters/outbound/models/user"
-	repositoryUser "github.com/raihandotmd/taskify/internal/adapters/outbound/repositories/sql/user"
 	authModel "github.com/raihandotmd/taskify/internal/usecase/models/token"
 	ucModel "github.com/raihandotmd/taskify/internal/usecase/models/user"
 	"github.com/raihandotmd/taskify/internal/usecase/token"
@@ -12,7 +11,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var repoUser = repositoryUser.New()
 var ucToken = token.New()
 
 func (uc *ucUser) Register(ctx context.Context, req ucModel.RegisterRequest) (ucModel.RegisterResponse, error) {

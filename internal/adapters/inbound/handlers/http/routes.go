@@ -21,6 +21,12 @@ func SetupRoutes(ginClient *gin.Engine) {
 				return
 			}
 		})
+		auth.POST("/login", func(c *gin.Context) {
+			if err := userHandler.Login(c); err != nil {
+				c.JSON(400, gin.H{"error": err.Error()})
+				return
+			}
+		})
 	}
 
 	api := ginClient.Group("/api")
