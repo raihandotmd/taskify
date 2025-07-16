@@ -5,21 +5,21 @@ import (
 
 	"github.com/gin-gonic/gin"
 	taskifyAuth "github.com/raihandotmd/taskify/internal/adapters/inbound/middleware/auth"
+	taskifyGin "github.com/raihandotmd/taskify/pkg/gin"
 )
 
-func GetAllProjectByUserId(gCtx *gin.Context) error {
+func GetAllProjectByUserId(gCtx *gin.Context) {
 	userId, err := taskifyAuth.GetUserId(gCtx)
 	if err != nil {
-		gCtx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return err
+		taskifyGin.NewJSONResponse(gCtx, http.StatusUnauthorized, nil, err)
+		return
 	}
 
 	response, err := usecaseProject.GetAllProjectByUserId(gCtx.Request.Context(), userId)
 	if err != nil {
-		gCtx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return nil
+		taskifyGin.NewJSONResponse(gCtx, http.StatusInternalServerError, nil, err)
+		return
 	}
 
-	gCtx.JSON(http.StatusOK, response)
-	return nil
+	taskifyGin.NewJSONResponse(gCtx, http.StatusOK, response, nil)
 }

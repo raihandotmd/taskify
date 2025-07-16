@@ -1,11 +1,15 @@
 package taskifyHttp
 
 import (
+	"errors"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	projectHandler "github.com/raihandotmd/taskify/internal/adapters/inbound/handlers/http/projects"
 	taskHandler "github.com/raihandotmd/taskify/internal/adapters/inbound/handlers/http/tasks"
 	userHandler "github.com/raihandotmd/taskify/internal/adapters/inbound/handlers/http/users"
 	middleware "github.com/raihandotmd/taskify/internal/adapters/inbound/middleware/auth"
+	taskifyGin "github.com/raihandotmd/taskify/pkg/gin"
 )
 
 func SetupRoutes(ginClient *gin.Engine) {
@@ -16,20 +20,14 @@ func SetupRoutes(ginClient *gin.Engine) {
 		})
 	})
 
+	ginClient.NoRoute(func(c *gin.Context) {
+		taskifyGin.NewJSONResponse(c, http.StatusNotFound, nil, errors.New("Route not found"))
+	})
+
 	auth := ginClient.Group("/auth")
 	{
-		auth.POST("/register", func(c *gin.Context) {
-			if err := userHandler.Register(c); err != nil {
-				c.JSON(400, gin.H{"error": err.Error()})
-				return
-			}
-		})
-		auth.POST("/login", func(c *gin.Context) {
-			if err := userHandler.Login(c); err != nil {
-				c.JSON(400, gin.H{"error": err.Error()})
-				return
-			}
-		})
+		auth.POST("/register", userHandler.Register)
+		auth.POST("/login", userHandler.Login)
 	}
 
 	api := ginClient.Group("/api")
@@ -37,56 +35,15 @@ func SetupRoutes(ginClient *gin.Engine) {
 	{
 		v1 := api.Group("/v1")
 		{
-			v1.POST("/projects", func(c *gin.Context) {
-				if err := projectHandler.NewProject(c); err != nil {
-					c.JSON(400, gin.H{"error": err.Error()})
-					return
-				}
-			})
-			v1.GET("/projects", func(c *gin.Context) {
-				if err := projectHandler.GetAllProjectByUserId(c); err != nil {
-					c.JSON(400, gin.H{"error": err.Error()})
-					return
-				}
-			})
-			v1.PUT("/projects/:id", func(c *gin.Context) {
-				if err := projectHandler.EditProject(c); err != nil {
-					c.JSON(400, gin.H{"error": err.Error()})
-					return
-				}
-			})
-			v1.DELETE("/projects/:id", func(c *gin.Context) {
-				if err := projectHandler.DeleteProject(c); err != nil {
-					c.JSON(400, gin.H{"error": err.Error()})
-					return
-				}
-			})
+			v1.POST("/projects", projectHandler.NewProject)
+			v1.GET("/projects", projectHandler.GetAllProjectByUserId)
+			v1.PUT("/projects/:id", projectHandler.EditProject)
+			v1.DELETE("/projects/:id", projectHandler.DeleteProject)
 
-			// TODO: Add API routes here
-			v1.POST("/tasks", func(c *gin.Context) {
-				if err := taskHandler.NewTask(c); err != nil {
-					c.JSON(400, gin.H{"error": err.Error()})
-					return
-				}
-			})
-			v1.GET("/projects/:id/tasks", func(c *gin.Context) {
-				if err := taskHandler.GetAllTasksByProjectId(c); err != nil {
-					c.JSON(400, gin.H{"error": err.Error()})
-					return
-				}
-			})
-			v1.PUT("/tasks/:id", func(c *gin.Context) {
-				if err := taskHandler.EditTask(c); err != nil {
-					c.JSON(400, gin.H{"error": err.Error()})
-					return
-				}
-			})
-			v1.DELETE("/tasks/:id", func(c *gin.Context) {
-				if err := taskHandler.DeleteTask(c); err != nil {
-					c.JSON(400, gin.H{"error": err.Error()})
-					return
-				}
-			})
+			v1.POST("/tasks", taskHandler.NewTask)
+			v1.GET("/projects/:id/tasks", taskHandler.GetAllTasksByProjectId)
+			v1.PUT("/tasks/:id", taskHandler.EditTask)
+			v1.DELETE("/tasks/:id", taskHandler.DeleteTask)
 		}
 	}
 }

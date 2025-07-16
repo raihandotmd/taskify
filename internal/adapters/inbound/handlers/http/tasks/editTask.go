@@ -5,27 +5,27 @@ import (
 
 	"github.com/gin-gonic/gin"
 	ibModel "github.com/raihandotmd/taskify/internal/adapters/inbound/handlers/http/model/task"
+	taskifyGin "github.com/raihandotmd/taskify/pkg/gin"
 )
 
-func EditTask(gCtx *gin.Context) error {
+func EditTask(gCtx *gin.Context) {
 	var req ibModel.EditTaskRequest
 	if err := gCtx.ShouldBindJSON(&req); err != nil {
-		gCtx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return err
+		taskifyGin.NewJSONResponse(gCtx, http.StatusBadRequest, nil, err)
+		return
 	}
 
 	req.ID = gCtx.Param("id")
 	if req.ID == "" {
-		gCtx.JSON(http.StatusBadRequest, gin.H{"error": "task ID is required"})
-		return nil
+		taskifyGin.NewJSONResponse(gCtx, http.StatusBadRequest, nil, "task ID is required")
+		return
 	}
 
 	task, err := usecaseTask.EditTask(gCtx.Request.Context(), req.ToUcModel())
 	if err != nil {
-		gCtx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return nil
+		taskifyGin.NewJSONResponse(gCtx, http.StatusInternalServerError, nil, err)
+		return
 	}
 
-	gCtx.JSON(http.StatusOK, task)
-	return nil
+	taskifyGin.NewJSONResponse(gCtx, http.StatusOK, task, nil)
 }

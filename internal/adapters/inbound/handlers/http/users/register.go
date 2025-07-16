@@ -1,25 +1,27 @@
 package users
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 
 	ibModel "github.com/raihandotmd/taskify/internal/adapters/inbound/handlers/http/model/user"
 	taskifyGin "github.com/raihandotmd/taskify/pkg/gin"
 )
 
-func Register(gCtx *gin.Context) error {
+func Register(gCtx *gin.Context) {
 	var request ibModel.RegisterRequest
 
 	if err := taskifyGin.BindAndValidate(gCtx, &request); err != nil {
-		return err
+		taskifyGin.NewJSONResponse(gCtx, http.StatusBadRequest, nil, err)
+		return
 	}
 
 	response, err := usecaseUser.Register(gCtx.Request.Context(), request.ToUcModel())
 	if err != nil {
-		gCtx.AbortWithStatusJSON(500, gin.H{"error": "Internal server error, please try again later"})
-		return nil
+		taskifyGin.NewJSONResponse(gCtx, http.StatusInternalServerError, nil, err)
+		return
 	}
 
-	gCtx.JSON(201, response)
-	return nil
+	taskifyGin.NewJSONResponse(gCtx, http.StatusCreated, response, nil)
 }

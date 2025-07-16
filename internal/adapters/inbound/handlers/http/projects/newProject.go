@@ -6,27 +6,27 @@ import (
 	"github.com/gin-gonic/gin"
 	ibModel "github.com/raihandotmd/taskify/internal/adapters/inbound/handlers/http/model/project"
 	taskifyAuth "github.com/raihandotmd/taskify/internal/adapters/inbound/middleware/auth"
+	taskifyGin "github.com/raihandotmd/taskify/pkg/gin"
 )
 
-func NewProject(gCtx *gin.Context) error {
+func NewProject(gCtx *gin.Context) {
 	var req ibModel.NewProjectRequest
 	if err := gCtx.ShouldBindJSON(&req); err != nil {
-		gCtx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return err
+		taskifyGin.NewJSONResponse(gCtx, http.StatusBadRequest, nil, err)
+		return
 	}
 
 	userId, err := taskifyAuth.GetUserId(gCtx)
 	if err != nil {
-		gCtx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return err
+		taskifyGin.NewJSONResponse(gCtx, http.StatusUnauthorized, nil, err)
+		return
 	}
 
 	project, err := usecaseProject.NewProject(gCtx.Request.Context(), req.ToUcModel(), userId)
 	if err != nil {
-		gCtx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return nil
+		taskifyGin.NewJSONResponse(gCtx, http.StatusInternalServerError, nil, err)
+		return
 	}
 
-	gCtx.JSON(http.StatusCreated, project)
-	return nil
+	taskifyGin.NewJSONResponse(gCtx, http.StatusCreated, project, nil)
 }

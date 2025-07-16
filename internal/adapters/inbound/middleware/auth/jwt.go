@@ -2,30 +2,32 @@ package taskifyAuth
 
 import (
 	"errors"
+	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	taskifyConfig "github.com/raihandotmd/taskify/internal/config"
 	tokenModel "github.com/raihandotmd/taskify/internal/usecase/models/token"
+	taskifyGin "github.com/raihandotmd/taskify/pkg/gin"
 )
 
 func JWTAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenConfig, err := taskifyConfig.NewTokenConfig()
 		if err != nil {
-			c.AbortWithStatusJSON(500, gin.H{"error": "Failed to load token configuration"})
+			taskifyGin.AbortJSONResponse(c, http.StatusInternalServerError, nil, errors.New("Failed to load token configuration"))
 			return
 		}
 
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
-			c.AbortWithStatusJSON(401, gin.H{"error": "Authorization header is required"})
+			taskifyGin.AbortJSONResponse(c, http.StatusUnauthorized, nil, errors.New("Authorization header is required"))
 			return
 		}
 
 		if !strings.HasPrefix(authHeader, "Bearer ") {
-			c.AbortWithStatusJSON(401, gin.H{"error": "Invalid authorization header format"})
+			taskifyGin.AbortJSONResponse(c, http.StatusUnauthorized, nil, errors.New("Invalid authorization header format"))
 			return
 		}
 
@@ -40,7 +42,7 @@ func JWTAuth() gin.HandlerFunc {
 		})
 
 		if err != nil {
-			c.AbortWithStatusJSON(401, gin.H{"error": "Invalid token"})
+			taskifyGin.AbortJSONResponse(c, http.StatusUnauthorized, nil, errors.New("Invalid token"))
 			return
 		}
 
@@ -50,7 +52,7 @@ func JWTAuth() gin.HandlerFunc {
 			c.Set("claims", claims)
 			c.Next()
 		} else {
-			c.AbortWithStatusJSON(401, gin.H{"error": "Invalid token claims"})
+			taskifyGin.AbortJSONResponse(c, http.StatusUnauthorized, nil, errors.New("Invalid token claims"))
 			return
 		}
 

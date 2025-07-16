@@ -4,21 +4,21 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	taskifyGin "github.com/raihandotmd/taskify/pkg/gin"
 )
 
-func DeleteTask(gCtx *gin.Context) error {
+func DeleteTask(gCtx *gin.Context) {
 	taskId := gCtx.Param("id")
 	if taskId == "" {
-		gCtx.JSON(http.StatusBadRequest, gin.H{"error": "task ID is required"})
-		return nil
+		taskifyGin.NewJSONResponse(gCtx, http.StatusBadRequest, nil, "Task ID is required")
+		return
 	}
 
 	response, err := usecaseTask.DeleteTask(gCtx.Request.Context(), taskId)
 	if err != nil {
-		gCtx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return nil
+		taskifyGin.NewJSONResponse(gCtx, http.StatusInternalServerError, nil, err)
+		return
 	}
 
-	gCtx.JSON(http.StatusOK, response)
-	return nil
+	taskifyGin.NewJSONResponse(gCtx, http.StatusOK, response, nil)
 }

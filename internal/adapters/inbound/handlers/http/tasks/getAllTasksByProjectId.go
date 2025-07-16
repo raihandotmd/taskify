@@ -4,19 +4,21 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	taskifyGin "github.com/raihandotmd/taskify/pkg/gin"
 )
 
-func GetAllTasksByProjectId(gCtx *gin.Context) error {
+func GetAllTasksByProjectId(gCtx *gin.Context) {
 	projectId := gCtx.Param("id")
 	if projectId == "" {
-		return nil
+		taskifyGin.NewJSONResponse(gCtx, http.StatusBadRequest, nil, "Project ID is required")
+		return
 	}
 
 	response, err := usecaseTask.GetAllTasksByProjectId(gCtx.Request.Context(), projectId)
 	if err != nil {
-		return nil
+		taskifyGin.NewJSONResponse(gCtx, http.StatusInternalServerError, nil, err)
+		return
 	}
 
-	gCtx.JSON(http.StatusOK, response)
-	return nil
+	taskifyGin.NewJSONResponse(gCtx, http.StatusOK, response, nil)
 }

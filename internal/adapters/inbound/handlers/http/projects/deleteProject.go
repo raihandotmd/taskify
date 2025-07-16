@@ -5,27 +5,28 @@ import (
 
 	"github.com/gin-gonic/gin"
 	taskifyAuth "github.com/raihandotmd/taskify/internal/adapters/inbound/middleware/auth"
+	taskifyGin "github.com/raihandotmd/taskify/pkg/gin"
 )
 
-func DeleteProject(gCtx *gin.Context) error {
+func DeleteProject(gCtx *gin.Context) {
 	projectId := gCtx.Param("id")
 	if projectId == "" {
-		gCtx.JSON(http.StatusBadRequest, gin.H{"error": "project ID is required"})
-		return nil
+		taskifyGin.NewJSONResponse(gCtx, http.StatusBadRequest, nil, "Project ID is required")
+		return
 	}
 
 	userId, err := taskifyAuth.GetUserId(gCtx)
 	if err != nil {
-		gCtx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return err
+		taskifyGin.NewJSONResponse(gCtx, http.StatusUnauthorized, nil, "unauthorized")
+		return
 	}
 
 	response, err := usecaseProject.DeleteProject(gCtx.Request.Context(), projectId, userId)
 	if err != nil {
-		gCtx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return nil
+		taskifyGin.NewJSONResponse(gCtx, http.StatusInternalServerError, nil, err)
+		return
 	}
 
-	gCtx.JSON(http.StatusOK, response)
-	return nil
+	taskifyGin.NewJSONResponse(gCtx, http.StatusOK, response, nil)
+	return
 }
