@@ -30,7 +30,7 @@ func EditProject(gCtx *gin.Context) error {
 	project, err := usecaseProject.EditProject(gCtx.Request.Context(), req.ToUcModel(), userId)
 	if err != nil {
 		gCtx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return err
+		return nil
 	}
 
 	gCtx.JSON(http.StatusOK, project)

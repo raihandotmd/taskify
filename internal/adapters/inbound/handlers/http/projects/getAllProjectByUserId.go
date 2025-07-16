@@ -17,7 +17,7 @@ func GetAllProjectByUserId(gCtx *gin.Context) error {
 	response, err := usecaseProject.GetAllProjectByUserId(gCtx.Request.Context(), userId)
 	if err != nil {
 		gCtx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return err
+		return nil
 	}
 
 	gCtx.JSON(http.StatusOK, response)

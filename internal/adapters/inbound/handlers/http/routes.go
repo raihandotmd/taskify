@@ -3,6 +3,7 @@ package taskifyHttp
 import (
 	"github.com/gin-gonic/gin"
 	projectHandler "github.com/raihandotmd/taskify/internal/adapters/inbound/handlers/http/projects"
+	taskHandler "github.com/raihandotmd/taskify/internal/adapters/inbound/handlers/http/tasks"
 	userHandler "github.com/raihandotmd/taskify/internal/adapters/inbound/handlers/http/users"
 	middleware "github.com/raihandotmd/taskify/internal/adapters/inbound/middleware/auth"
 )
@@ -62,10 +63,29 @@ func SetupRoutes(ginClient *gin.Engine) {
 			})
 
 			// TODO: Add API routes here
-			v1.GET("/tasks", func(c *gin.Context) {
-				c.JSON(200, gin.H{
-					"message": "List of tasks",
-				})
+			v1.POST("/tasks", func(c *gin.Context) {
+				if err := taskHandler.NewTask(c); err != nil {
+					c.JSON(400, gin.H{"error": err.Error()})
+					return
+				}
+			})
+			v1.GET("/projects/:id/tasks", func(c *gin.Context) {
+				if err := taskHandler.GetAllTasksByProjectId(c); err != nil {
+					c.JSON(400, gin.H{"error": err.Error()})
+					return
+				}
+			})
+			v1.PUT("/tasks/:id", func(c *gin.Context) {
+				if err := taskHandler.EditTask(c); err != nil {
+					c.JSON(400, gin.H{"error": err.Error()})
+					return
+				}
+			})
+			v1.DELETE("/tasks/:id", func(c *gin.Context) {
+				if err := taskHandler.DeleteTask(c); err != nil {
+					c.JSON(400, gin.H{"error": err.Error()})
+					return
+				}
 			})
 		}
 	}
