@@ -11,12 +11,14 @@ type (
 		INewProject
 		IGetAllProjectByUserId
 		IEditProject
+		IDeleteProject
 	}
 
 	ucProject struct {
 		newProject            INewProject
 		getAllProjectByUserId IGetAllProjectByUserId
 		editProject           IEditProject
+		deleteProject         IDeleteProject
 	}
 )
 

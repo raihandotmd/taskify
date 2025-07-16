@@ -54,6 +54,12 @@ func SetupRoutes(ginClient *gin.Engine) {
 					return
 				}
 			})
+			v1.DELETE("/projects/:id", func(c *gin.Context) {
+				if err := projectHandler.DeleteProject(c); err != nil {
+					c.JSON(400, gin.H{"error": err.Error()})
+					return
+				}
+			})
 
 			// TODO: Add API routes here
 			v1.GET("/tasks", func(c *gin.Context) {

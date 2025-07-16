@@ -5,12 +5,14 @@ type (
 		ICreate
 		IGetAllProjectByUserId
 		IEdit
+		IDelete
 	}
 
 	repository struct {
 		create                ICreate
 		getAllProjectByUserId IGetAllProjectByUserId
 		edit                  IEdit
+		delete                IDelete
 	}
 )
 
