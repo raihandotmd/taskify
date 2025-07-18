@@ -28,5 +28,4 @@ func DeleteProject(gCtx *gin.Context) {
 	}
 
 	taskifyGin.NewJSONResponse(gCtx, http.StatusOK, response, nil)
-	return
 }

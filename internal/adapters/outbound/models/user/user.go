@@ -1,6 +1,10 @@
 package model
 
-import obModel "github.com/raihandotmd/taskify/internal/adapters/outbound/models"
+import (
+	"time"
+
+	obModel "github.com/raihandotmd/taskify/internal/adapters/outbound/models"
+)
 
 type (
 	User struct {
@@ -9,5 +13,10 @@ type (
 		Email    string `gorm:"column:email" json:"email"`
 		Password string `gorm:"column:password" json:"-"`
 		obModel.BaseModel
+	}
+
+	RevokeUserToken struct {
+		UserID    string
+		ExpiresAt time.Duration
 	}
 )

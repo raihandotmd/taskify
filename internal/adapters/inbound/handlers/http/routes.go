@@ -28,10 +28,11 @@ func SetupRoutes(ginClient *gin.Engine) {
 	{
 		auth.POST("/register", userHandler.Register)
 		auth.POST("/login", userHandler.Login)
+		auth.Use(middleware.JWTAuth()).Use(middleware.TokenRevoke).GET("/logout", userHandler.Logout)
 	}
 
 	api := ginClient.Group("/api")
-	api.Use(middleware.JWTAuth())
+	api.Use(middleware.JWTAuth()).Use(middleware.TokenRevoke)
 	{
 		v1 := api.Group("/v1")
 		{

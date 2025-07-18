@@ -15,6 +15,13 @@ pg.up:
 pg.down:
 	docker compose -f docker-compose.yml down postgres
 
+# redis.up and redis.down are used to manage the Redis service
+redis.up:
+	docker compose -f docker-compose.yml up -d redis
+
+redis.down:
+	docker compose -f docker-compose.yml down redis
+
 # adminer.up and adminer.down are used to manage the Adminer service
 adminer.up:
 	docker compose -f docker-compose.yml up -d adminer

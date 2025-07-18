@@ -4,10 +4,11 @@ A modern task management API built with Go, Gin, GORM, and PostgreSQL. Taskify a
 
 ## 🚀 Features
 
-- **User Management**: Registration and authentication with JWT
+- **User Management**: Registration, authentication, and logout with JWT
 - **Project Management**: Create, read, update, and delete projects
 - **Task Management**: Full CRUD operations for tasks within projects
-- **Security**: JWT-based authentication and authorization
+- **Security**: JWT-based authentication and authorization with token revocation
+- **Caching**: Redis integration for token blacklisting and session management
 - **Database**: PostgreSQL with GORM ORM
 - **Architecture**: Clean hexagonal architecture with clear separation of concerns
 - **Containerization**: Docker and Docker Compose support
@@ -34,6 +35,7 @@ This project follows the hexagonal architecture (ports and adapters) pattern:
 - Go 1.24.4 or higher
 - Docker and Docker Compose
 - PostgreSQL (if running without Docker)
+- Redis (if running without Docker)
 
 ## ⚙️ Installation
 
@@ -82,6 +84,12 @@ ADMINER_PORT=8080
 # JWT Configuration
 TOKEN_SECRET=your-super-secret-jwt-key
 TOKEN_EXPIRATION=24h
+
+# Redis Configuration
+REDIS_ADDR=localhost:6379
+REDIS_PORT=6379
+REDIS_PASSWORD=
+REDIS_DB=0
 ```
 
 ### 3. Install dependencies
@@ -100,6 +108,7 @@ make init.up
 
 This will start:
 - PostgreSQL database
+- Redis cache server
 - Adminer (database administration tool)
 
 ### Run database migrations
@@ -121,7 +130,16 @@ The API will be available at `http://localhost:3000`
 | Command | Description |
 |---------|-------------|
 | `make run` | Start the application |
-| `make init.up` | Start PostgreSQL and Adminer |
+| `make init.up` | Start PostgreSQL, Redis, and Adminer |
+| `make init.down` | Stop all infrastructure services |
+| `make pg.up` | Start PostgreSQL only |
+| `make pg.down` | Stop PostgreSQL only |
+| `make redis.up` | Start Redis only |
+| `make redis.down` | Stop Redis only |
+| `make adminer.up` | Start Adminer only |
+| `make adminer.down` | Stop Adminer only |
+| `make migrate.up` | Run database migrations |
+| `make migrate.down` | Rollback database migrations |
 | `make init.down` | Stop all services |
 | `make pg.up` | Start only PostgreSQL |
 | `make pg.down` | Stop PostgreSQL |
@@ -174,11 +192,30 @@ Content-Type: application/json
 }
 ```
 
+#### Login User
+```http
+GET /auth/login
+Content-Type: application/json
+
+{
+  "email": "john@example.com",
+  "password": "password123"
+}
+```
+---
 ### Protected Endpoints
 All endpoints under `/api/v1/` require JWT authentication. Include the token in the Authorization header:
 
 ```
 Authorization: Bearer <your-jwt-token>
+```
+
+### Authentication Endpoints
+
+#### Logout User
+Revoking the access token, by inserting into redis cache. 
+```http
+GET /auth/logout
 ```
 
 ### Project Endpoints

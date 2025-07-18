@@ -18,6 +18,13 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - taskify_network
+  redis:
+    image: redis:latest
+    container_name: taskify_redis
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    networks:
+      - taskify_network
   adminer:
     image: adminer:latest
     container_name: taskify_adminer

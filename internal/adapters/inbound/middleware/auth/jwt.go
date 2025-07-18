@@ -70,3 +70,15 @@ func GetUserId(c *gin.Context) (string, error) {
 	}
 	return id, nil
 }
+
+func GetExpiresAt(c *gin.Context) (int64, error) {
+	claims, exists := c.Get("claims")
+	if !exists {
+		return 0, errors.New("claims not found in context")
+	}
+	accessToken, ok := claims.(*tokenModel.AccessToken)
+	if !ok {
+		return 0, errors.New("claims is not of type AccessToken")
+	}
+	return accessToken.ExpiresAt.Unix(), nil
+}
